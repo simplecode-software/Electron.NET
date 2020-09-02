@@ -3,7 +3,8 @@ const electron_1 = require("electron");
 const path = require('path');
 const windows = [];
 let readyToShowWindowsIds = [];
-let window, lastOptions, electronSocket;
+let window, electronSocket;
+const windowsData = new Map();
 let mainWindowURL;
 module.exports = (socket, app) => {
     electronSocket = socket;
@@ -190,7 +191,9 @@ module.exports = (socket, app) => {
                 readyToShowWindowsIds.push(window.id);
             }
         });
-        lastOptions = options;
+        if (options.hideOnClose) {
+            windowsData.set(window.id, { window, options, hidden: false });
+        }
         window.on('closed', (sender) => {
             for (let index = 0; index < windows.length; index++) {
                 const windowItem = windows[index];
@@ -207,13 +210,42 @@ module.exports = (socket, app) => {
                 }
             }
         });
-        app.on('activate', () => {
-            // On macOS it's common to re-create a window in the app when the
-            // dock icon is clicked and there are no other windows open.
-            if (window === null && lastOptions) {
-                window = new electron_1.BrowserWindow(lastOptions);
+
+        // replace window close logic with hide logic
+        function onCustomClose(event) {
+            const windowData = windowsData.get(event.sender.id);
+            if (windowData && windowData.options.hideOnClose) {
+                // prevent action if window's close(x) button clicked
+                event.preventDefault();
+                event.sender.hide();
+                windowData.hidden = true;
+            }
+        }
+        window.on('close', onCustomClose);
+
+        app.on('before-quit', (event) => {
+            // remove custom close logic if app quits by menu command
+            // (not window close)
+            for (let index = 0; index < windows.length; index++) {
+                const windowItem = windows[index];
+                try {
+                    windowItem.off('close', onCustomClose);
+                }
+                catch (error) {
+                }
             }
         });
+
+        app.on('activate', () => {
+            // show window when dock icon is clicked on macOS
+            for (let [id, windowData] of windowsData) {
+                if (windowData.hidden) {
+                    windowData.window.show();
+                    windowData.hidden = false;
+                }
+            }
+        });
+
         if (loadUrl) {
             window.loadURL(loadUrl);
         }
