@@ -279,8 +279,14 @@ module.exports = (socket, app) => {
         electronSocket.emit('browserWindow-isFocused-completed', isFocused);
     });
     socket.on('browserWindowIsDestroyed', (id) => {
-        const isDestroyed = getWindowById(id).isDestroyed();
-        electronSocket.emit('browserWindow-isDestroyed-completed', isDestroyed);
+        const wnd = getWindowById(id);
+        if (wnd == undefined) {
+            electronSocket.emit('browserWindow-isDestroyed-completed', true);
+        }
+        else {
+            const isDestroyed = wnd.isDestroyed();
+            electronSocket.emit('browserWindow-isDestroyed-completed', isDestroyed);
+        }
     });
     socket.on('browserWindowShow', (id) => {
         getWindowById(id).show();
