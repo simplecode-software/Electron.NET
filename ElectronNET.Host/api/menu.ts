@@ -67,4 +67,8 @@ export = (socket: SocketIO.Socket) => {
             }
         });
     }
+
+    socket.on('menu-sendActionToFirstResponder', ({ action }) => {
+        Menu.sendActionToFirstResponder(action);
+    });
 };
