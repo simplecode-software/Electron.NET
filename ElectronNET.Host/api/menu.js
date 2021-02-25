@@ -56,5 +56,8 @@ module.exports = (socket) => {
             }
         });
     }
+    socket.on('menu-sendActionToFirstResponder', ({ action }) => {
+        electron_1.Menu.sendActionToFirstResponder(action);
+    });
 };
 //# sourceMappingURL=menu.js.map
