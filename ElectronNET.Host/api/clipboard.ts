@@ -61,6 +61,11 @@ export = (socket: SocketIO.Socket) => {
         clipboard.write(data, type);
     });
 
+    socket.on('clipboard-write-img-data-url', (dataURL) => {
+        var image = nativeImage.createFromDataURL(dataURL);
+        clipboard.writeImage(image);
+    });
+
     socket.on('clipboard-readImage', (type) => {
         const image = clipboard.readImage(type);
         electronSocket.emit('clipboard-readImage-Completed', { 1: image.toPNG().toString('base64') });

@@ -238,6 +238,15 @@ namespace ElectronNET.API
         }
 
         /// <summary>
+        /// Writes image to the clipboard.
+        /// </summary> 
+        /// <param name="dataURL">Image data</param>
+        public void WriteImage(string dataURL)
+        {
+            BridgeConnector.Socket.Emit("clipboard-write-img-data-url", dataURL);
+        }
+
+        /// <summary>
         /// Reads an image from the clipboard.
         /// </summary>
         /// <param name="type"></param>
