@@ -5,6 +5,9 @@ let electronSocket;
 module.exports = (socket) => {
     electronSocket = socket;
     socket.on('createNotification', (options) => {
+        if (options.icon.startsWith('data:image/png;base64')) {
+            options.icon = electron_1.nativeImage.createFromDataURL(options.icon);
+        }
         const notification = new electron_1.Notification(options);
         let haveEvent = false;
         if (options.showID) {
