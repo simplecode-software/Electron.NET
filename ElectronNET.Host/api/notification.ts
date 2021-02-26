@@ -1,14 +1,10 @@
-import { Notification, nativeImage } from 'electron';
+import { Notification } from 'electron';
 const notifications: Electron.Notification[] = [];
 let electronSocket;
 
 export = (socket: SocketIO.Socket) => {
     electronSocket = socket;
     socket.on('createNotification', (options) => {
-        if (options.icon.startsWith('data:image/png;base64')) {
-            options.icon = nativeImage.createFromDataURL(options.icon);
-        }
-
         const notification = new Notification(options);
         let haveEvent = false;
 
