@@ -146,7 +146,10 @@ function startSocketApiBridge(port) {
     // otherwise the Windows Firewall will be triggered
     server = require('http').createServer();
     io = require('socket.io')();
-    io.attach(server);
+    io.attach(server, {
+        pingInterval: 25000,
+        pingTimeout: 2147483647 - 25000,
+    });
 
     server.listen(port, 'localhost');
     server.on('listening', function () {
