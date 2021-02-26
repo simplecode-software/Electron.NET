@@ -67,6 +67,20 @@ namespace ElectronNET.API
                 menuItem.Click?.Invoke();
             });
         }
+        
+        /// <summary>
+        /// Sends the action to the first responder of MacOS application.
+        /// This is used for emulating default MacOS menu behaviors.
+        /// See the <see href="https://developer.apple.com/library/mac/documentation/Cocoa/Conceptual/EventOverview/EventArchitecture/EventArchitecture.html#//apple_ref/doc/uid/10000060i-CH3-SW7">MacOS Cocoa Event Handling Guide</see> for more information on macOS' native actions.
+        /// </summary>
+        /// <param name="action">MacOS native action</param>
+        public void SendActionToFirstResponder(string action)
+        {
+            BridgeConnector.Socket.Emit("menu-sendActionToFirstResponder", JObject.FromObject(new
+            {
+                Action = action
+            }, _jsonSerializer));
+        }
 
         /// <summary>
         /// Gets the context menu items.
